@@ -1,0 +1,6 @@
+*.o
+gemboy
+*.swp
+*.swo
+bin/gemboy
+todo.md
