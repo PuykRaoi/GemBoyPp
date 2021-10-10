@@ -1,5 +1,7 @@
 #include "lr35902.h"
-/* #include "memory.h" */
+#include "systemBus.h"
+
+#include <iostream>
 
 void LR35902::Initialize()
 {
@@ -18,10 +20,30 @@ void LR35902::Initialize()
     instructions_executed = 0;
 }
 
-/* void LR35902::UnimplementedInstruction(uint8_t opcode) */
-/* { */
-/*     halted = true; */
-/* } */
+void LR35902::PrintState()
+{
+    std::cout << "********* CPU STATE *********" << std::endl;
+    std::cout << "a: " << std::hex << (int)a << std::endl;
+    std::cout << "b: " << std::hex << (int)b << std::endl;
+    std::cout << "c: " << std::hex << (int)c << std::endl;
+    std::cout << "d: " << std::hex << (int)d << std::endl;
+    std::cout << "e: " << std::hex << (int)e << std::endl;
+    std::cout << "h: " << std::hex << (int)h << std::endl;
+    std::cout << "l: " << std::hex << (int)l << std::endl;
+    std::cout << "pc: " << std::hex << (int)pc << std::endl;
+    std::cout << "sp: " << std::hex << (int)sp << std::endl;
+    std::cout << "n: " << std::hex << (int)cc.n << std::endl;
+    std::cout << "h: " << std::hex << (int)cc.h << std::endl;
+    std::cout << "z: " << std::hex << (int)cc.z << std::endl;
+    std::cout << "c: " << std::hex << (int)cc.c << std::endl;
+}
+
+void LR35902::UnimplementedInstruction(uint8_t opcode)
+{
+    std::cout << "Found unimplemented instruction: "
+        << std::hex << (int)opcode << std::endl;
+    halted = true;
+}
 
 /* void LR35902::EmulateCycles(uint32_t num_cycles) */
 /* { */
@@ -31,18 +53,11 @@ void LR35902::Initialize()
 /*     } */
 /* } */
 
-/* void LR35902::RegularInstruction() */
-/* { */
-/*     // Check PC boundary */
-/*     if (pc > 0x3fff) { */
-/*         halted = true; */
-/*         return; */
-/*     } */
-/*     // Show the disassembled instruction before executing */
-/*     // Fetch opcode */
-/*     uint8_t opcode = MemoryRead(pc); */
-/*     ExecuteInstruction(opcode); */
-/* } */
+void LR35902::ExecuteInstruction()
+{
+    uint8_t opcode = Read(pc);
+    NonPrefixedInstruction(opcode);
+}
 
 /* void LR35902::Interrupt(uint8_t opcode) */
 /* { */
@@ -53,14 +68,14 @@ void LR35902::Initialize()
 /*     } */
 /* } */
 
-/* void LR35902::ExecuteInstruction(uint8_t opcode) */
-/* { */
+void LR35902::NonPrefixedInstruction(uint8_t opcode)
+{
 /* #define BYTE1 MemoryRead(pc+1) */
 /* #define BYTE2 MemoryRead(pc+2) */
 /*     // Decode and execute instruction */
-/*     switch(opcode) */
-/*     { */
-/*         case 0x00:      NOP ();                                   break; */
+    switch(opcode)
+    {
+        case 0x00:      NOP ();                                   break;
 /*         case 0x01:      LXI (b, c, BYTE2, BYTE1);                 break; */
 /*         case 0x02:   STAX_B ();                                   break; */
 /*         case 0x03:      INX (b, c);                               break; */
@@ -316,57 +331,31 @@ void LR35902::Initialize()
 /*         /1*   0xfd: - *1/ */
 /*         case 0xfe:      CPI (BYTE1);                              break; */
 /*         case 0xff:      RST (0x7);                                break; */
-/*         default  : UnimplementedInstruction(opcode);              break; */
-/*     } */
+        default  : UnimplementedInstruction(opcode);              break;
+    }
 
-/*     instructions_executed++; */
-/* } */
+    instructions_executed++;
+}
 
-/* bool LR35902::Running() */
-/* { */
-/*     return !halted; */
-/* } */
+bool LR35902::Running()
+{
+    return !halted;
+}
 
-/* // Even parity lookup table */
-/* bool LR35902::Parity(uint8_t byte) */
-/* { */
+uint8_t LR35902::Read(uint16_t address)
+{
+    return bus->Read(address);
+}
 
-/*     bool parity_table[] = { */
-/*       1, 0, 0, 1, 0, 1, 1, 0, 0, 1, 1, 0, 1, 0, 0, 1, */
-/*       0, 1, 1, 0, 1, 0, 0, 1, 1, 0, 0, 1, 0, 1, 1, 0, */
-/*       0, 1, 1, 0, 1, 0, 0, 1, 1, 0, 0, 1, 0, 1, 1, 0, */
-/*       1, 0, 0, 1, 0, 1, 1, 0, 0, 1, 1, 0, 1, 0, 0, 1, */
-/*       0, 1, 1, 0, 1, 0, 0, 1, 1, 0, 0, 1, 0, 1, 1, 0, */
-/*       1, 0, 0, 1, 0, 1, 1, 0, 0, 1, 1, 0, 1, 0, 0, 1, */
-/*       1, 0, 0, 1, 0, 1, 1, 0, 0, 1, 1, 0, 1, 0, 0, 1, */
-/*       0, 1, 1, 0, 1, 0, 0, 1, 1, 0, 0, 1, 0, 1, 1, 0, */
-/*       0, 1, 1, 0, 1, 0, 0, 1, 1, 0, 0, 1, 0, 1, 1, 0, */
-/*       1, 0, 0, 1, 0, 1, 1, 0, 0, 1, 1, 0, 1, 0, 0, 1, */
-/*       1, 0, 0, 1, 0, 1, 1, 0, 0, 1, 1, 0, 1, 0, 0, 1, */
-/*       0, 1, 1, 0, 1, 0, 0, 1, 1, 0, 0, 1, 0, 1, 1, 0, */
-/*       1, 0, 0, 1, 0, 1, 1, 0, 0, 1, 1, 0, 1, 0, 0, 1, */
-/*       0, 1, 1, 0, 1, 0, 0, 1, 1, 0, 0, 1, 0, 1, 1, 0, */
-/*       0, 1, 1, 0, 1, 0, 0, 1, 1, 0, 0, 1, 0, 1, 1, 0, */
-/*       1, 0, 0, 1, 0, 1, 1, 0, 0, 1, 1, 0, 1, 0, 0, 1 */
-/*     }; */
-/*     return parity_table[byte]; */
-/* } */
+void LR35902::Write(uint16_t address, uint8_t data)
+{
+    //bus->Write(address, data);
+}
 
-/* uint8_t LR35902::MemoryRead(uint16_t address) */
-/* { */
-/*     return m_memory->Read(address); */
-/* } */
-
-/* void LR35902::MemoryWrite(uint16_t address, uint8_t data) */
-/* { */
-/*     m_memory->Write(address, data); */
-/* } */
-
-/* void LR35902::Connect(Io_devices* l_devices, Memory* i_memory) */
-/* { */
-/*     devices = l_devices; */
-/*     m_memory = i_memory; */
-/* } */
+void LR35902::Connect(SystemBus* l_bus)
+{
+    bus = l_bus;
+}
 
 /* void LR35902::logical_flags(uint8_t result) */
 /* { */
