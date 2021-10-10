@@ -185,21 +185,22 @@
 /*     pc += 2; */
 /* } */
 
-/* // Jump on condition */
-/* // For JMP, simply pass true */
-/* void LR35902::J_Cond(uint8_t hi, uint8_t lo, bool cond) */
-/* { */
-/*     if(cond) */
-/*     { */
-/*         uint16_t address = (hi << 8) | lo; */
-/*         pc = address; */
-/*     } */
-/*     else */
-/*     { */
-/*         pc += 3; */
-/*     } */
-/*     cycles += 10; */
-/* } */
+// Jump on condition
+// For JMP, simply pass true
+void LR35902::J_Cond(uint8_t hi, uint8_t lo, bool cond)
+{
+    if(cond)
+    {
+        uint16_t address = (hi << 8) | lo;
+        pc = address;
+        cycles += 16;
+    }
+    else
+    {
+        pc += 3;
+        cycles += 12;
+    }
+}
 
 /* // Unconditional call */
 /* // The address to be called are encoded in the two bytes */
@@ -642,19 +643,19 @@
 /*     cycles += 7; */
 /* } */
 
-/* void LR35902::MVI(uint8_t& reg, uint8_t data) */
-/* { */
-/*     reg = data; */
-/*     pc += 2; */
-/*     cycles += 7; */
-/* } */
+void LR35902::MVI(uint8_t& reg, uint8_t data)
+{
+    reg = data;
+    pc += 2;
+    cycles += 8;
+}
 
-/* void LR35902::MOV_r_r(uint8_t& r1, uint8_t& r2) */
-/* { */
-/*     r1 = r2; */
-/*     pc += 1; */
-/*     cycles += 5; */
-/* } */
+void LR35902::MOV_r_r(uint8_t& r1, uint8_t& r2)
+{
+    r1 = r2;
+    pc += 1;
+    cycles += 5;
+}
 
 /* void LR35902::MOV_r_m(uint8_t& r) */
 /* { */
@@ -672,14 +673,14 @@
 /*     cycles += 7; */
 /* } */
 
-/* // Load immediate register pair */
-/* void LR35902::LXI(uint8_t& r1, uint8_t& r2, uint8_t d1, uint8_t d2) */
-/* { */
-/*     r1 = d1; */
-/*     r2 = d2; */
-/*     pc += 3; */
-/*     cycles += 10; */
-/* } */
+// Load immediate register pair
+void LR35902::LXI(uint8_t& r1, uint8_t& r2, uint8_t d1, uint8_t d2)
+{
+    r1 = d1;
+    r2 = d2;
+    pc += 3;
+    cycles += 12;
+}
 
 /* // Load A indirect from the address pointed to by the register pair */
 /* void LR35902::LDAX(uint8_t& r1, uint8_t& r2) */
@@ -760,6 +761,20 @@
 /*     pc += 3; */
 /*     cycles += 16; */
 /* } */
+
+// A <- (HL); HL++;
+void LR35902::LDAHLI()
+{
+    uint16_t address = (h << 8) | l;
+    a = Read(address);
+
+    address++;
+    h = (address >> 8) & 0xff;
+    l = address & 0xff;
+
+    pc += 1;
+    cycles += 8;
+}
 
 /* // Store HL pair direct */
 /* void LR35902::SHLD(uint8_t hi, uint8_t lo) */

@@ -38,6 +38,8 @@ public:
 // Auxiliary functions for testing
 public:
     void PrintState();
+    void Disassemble(uint8_t opcode, uint8_t arg1, uint8_t arg2);
+    void NonPrefixDisassemble(uint8_t opcode, uint8_t arg1, uint8_t arg2);
 
 private:
     SystemBus* bus;
@@ -72,12 +74,12 @@ public:
 
 // Implementations for the opcodes
     /* // Branch group */
-    /* void J_Cond(uint8_t hi, uint8_t lo, bool cond); // Tested */
+    void J_Cond(uint8_t hi, uint8_t lo, bool cond);
     /* void PCHL();                                    // */
     /* // Other group */
-    void NOP();                                     // Skip
+    void NOP();
     /* // Stack group */
-    /* void LXI_SP(uint8_t hi, uint8_t lo);            // Tested */
+    void LXI_SP(uint8_t hi, uint8_t lo);
     /* void PUSH_rp(uint8_t& r1, uint8_t& r2);         // Tested */
     /* void POP_rp(uint8_t& r1, uint8_t& r2);          // Tested */
     /* void PUSH_PSW();                                // Tested */
@@ -85,12 +87,12 @@ public:
     /* void XTHL();                                    // Skip */
     /* void SPHL(); */
     /* // Move group */
-    /* void MVI(uint8_t& reg, uint8_t data);           // Tested */
-    /* void MOV_r_r(uint8_t& r1, uint8_t& r2);         // Tested */
+    void MVI(uint8_t& reg, uint8_t data);
+    void MOV_r_r(uint8_t& r1, uint8_t& r2);
     /* void MOV_r_m(uint8_t& r);                       // Tested */
     /* void MOV_m_r(uint8_t& r);                       // Tested */
     /* void MVI_M(uint8_t data);                       // Tested */
-    /* void LXI(uint8_t& r1, uint8_t& r2, uint8_t d1, uint8_t d2); // Tested */
+    void LXI(uint8_t& r1, uint8_t& r2, uint8_t d1, uint8_t d2);
     /* void LDAX(uint8_t& r1, uint8_t& r2);            // Tested */
     /* void STA(uint8_t byte_h, uint8_t byte_l);       // Tested */
     /* void LDA(uint8_t byte_h, uint8_t byte_l);       // Tested */
@@ -99,6 +101,7 @@ public:
     /* void STAX_D();                                  // Tested */
     /* void LHLD(uint8_t byte_h, uint8_t byte_l);      // Tested */
     /* void SHLD(uint8_t byte_h, uint8_t byte_l);      // Tested */
+    void LDAHLI();
     /* // Call group */
     /* void CALL(uint8_t hi, uint8_t lo);              // Tested */
     /* void CALL(uint16_t address); */
