@@ -202,6 +202,20 @@ void LR35902::J_Cond(uint8_t hi, uint8_t lo, bool cond)
     }
 }
 
+// Relative Jump on condition
+// For JR, simply pass true
+void LR35902::JR_Cond(int8_t amount, bool cond)
+{
+    if(cond) {
+        pc += amount;
+        cycles += 12;
+    }
+    else {
+        pc += 2;
+        cycles += 8;
+    }
+}
+
 /* // Unconditional call */
 /* // The address to be called are encoded in the two bytes */
 /* // following the call instruction */
@@ -285,16 +299,19 @@ void LR35902::J_Cond(uint8_t hi, uint8_t lo, bool cond)
 /*     cycles += 11; */
 /* } */
 
-/* void LR35902::INR_r(uint8_t& r) */
-/* { */
-/*     uint8_t result = r + 1; */
+void LR35902::INR_r(uint8_t& r)
+{
+    uint8_t result = r + 1;
 
-/*     ZSPFlags(result); */
+    cc.z = (result == 0);
+    cc.n = 0;
+    cc.h = ((result & 0x10) != 0);
+    //cc.c Unmodified
 
-/*     r = result; */
-/*     pc += 1; */
-/*     cycles += 5; */
-/* } */
+    r = result;
+    pc += 1;
+    cycles += 4;
+}
 
 /* void LR35902::INR_M() */
 /* { */
@@ -309,16 +326,19 @@ void LR35902::J_Cond(uint8_t hi, uint8_t lo, bool cond)
 /*     cycles += 10; */
 /* } */
 
-/* void LR35902::DCR_r(uint8_t& r) */
-/* { */
-/*     uint8_t result = r - 1; */
+void LR35902::DCR_r(uint8_t& r)
+{
+    uint8_t result = r - 1;
 
-/*     ZSPFlags(result); */
+    cc.z = (result == 0);
+    cc.n = 1;
+    cc.h = ((result & 0x10) != 0);
+    //cc.c Unmodified
 
-/*     r = result; */
-/*     pc += 1; */
-/*     cycles += 5; */
-/* } */
+    r = result;
+    pc += 1;
+    cycles += 4;
+}
 
 /* // Increment register pair */
 /* void LR35902::INX(uint8_t& r1, uint8_t& r2) */
@@ -743,14 +763,14 @@ void LR35902::LXI(uint8_t& r1, uint8_t& r2, uint8_t d1, uint8_t d2)
 /*     cycles += 7; */
 /* } */
 
-/* // Store A indirect */
-/* void LR35902::STAX_D() */
-/* { */
-/*     uint16_t address = (d << 8) | e; */
-/*     MemoryWrite(address, a); */
-/*     pc += 1; */
-/*     cycles += 7; */
-/* } */
+// Store A indirect
+void LR35902::STAX_D()
+{
+    uint16_t address = (d << 8) | e;
+    Write(address, a);
+    pc += 1;
+    cycles += 8;
+}
 
 /* // Load HL pair direct */
 /* void LR35902::LHLD(uint8_t hi, uint8_t lo) */

@@ -3,15 +3,19 @@
 #include "lr35902.h"
 #include "systemBus.h"
 #include "cartridge.h"
+#include "wram.h"
 
 int main()
 {
     SystemBus bus;
     Cartridge cartridge;
     LR35902 cpu;
+    WRAM wram;
+
+    wram.Initialize();
 
     cpu.Connect(&bus);
-    bus.Connect(&cartridge);
+    bus.Connect(&cartridge, &wram);
 
     std::cout << "Hello Gemboy!" << std::endl;
 

@@ -75,6 +75,7 @@ public:
 // Implementations for the opcodes
     /* // Branch group */
     void J_Cond(uint8_t hi, uint8_t lo, bool cond);
+    void JR_Cond(int8_t amount, bool cond);
     /* void PCHL();                                    // */
     /* // Other group */
     void NOP();
@@ -98,7 +99,7 @@ public:
     /* void LDA(uint8_t byte_h, uint8_t byte_l);       // Tested */
     /* void XCHG();                                    // Tested */
     /* void STAX_B();                                  // Tested */
-    /* void STAX_D();                                  // Tested */
+    void STAX_D();
     /* void LHLD(uint8_t byte_h, uint8_t byte_l);      // Tested */
     /* void SHLD(uint8_t byte_h, uint8_t byte_l);      // Tested */
     void LDAHLI();
@@ -110,9 +111,9 @@ public:
     /* void RST(uint8_t exp);                          // Pending */
     /* void R_cond(bool cond);                         // Tested */
     /* // Increment and decrement group */
-    /* void INR_r(uint8_t& r);                         // Tested */
+    void INR_r(uint8_t& r);
     /* void INR_M();                                   // Tested */
-    /* void DCR_r(uint8_t& r);                         // Tested */
+    void DCR_r(uint8_t& r);
     /* void INX(uint8_t& r1, uint8_t& r2);             // Tested */
     /* void INX_SP(); */
     /* void DCX_H();                                   // Tested */

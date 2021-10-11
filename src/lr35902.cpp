@@ -91,14 +91,14 @@ void LR35902::NonPrefixedInstruction(uint8_t opcode)
 /*         case 0x0a:     LDAX (b, c);                               break; */
 /*         case 0x0b:    DCX_B ();                                   break; */
 /*         case 0x0c:    INR_r (c);                                  break; */
-/*         case 0x0d:    DCR_r (c);                                  break; */
+        case 0x0d:    DCR_r (c);                                  break;
         case 0x0e:      MVI (c, BYTE1);                           break;
 /*         case 0x0f:      RRC ();                                   break; */
 /*         /1*   0x10: - *1/ */
         case 0x11:      LXI (d, e, BYTE2, BYTE1);                 break;
-/*         case 0x12:   STAX_D ();                                   break; */
+        case 0x12:   STAX_D ();                                   break;
 /*         case 0x13:      INX (d, e);                               break; */
-/*         case 0x14:    INR_r (d);                                  break; */
+        case 0x14:    INR_r (d);                                  break;
 /*         case 0x15:    DCR_r (d);                                  break; */
 /*         case 0x16:      MVI (d, BYTE1);                           break; */
 /*         case 0x17:      RAL ();                                   break; */
@@ -106,11 +106,11 @@ void LR35902::NonPrefixedInstruction(uint8_t opcode)
 /*         case 0x19:      DAD (d, e);                               break; */
 /*         case 0x1a:     LDAX (d, e);                               break; */
 /*         case 0x1b:    DCX_D ();                                   break; */
-/*         case 0x1c:    INR_r (e);                                  break; */
+        case 0x1c:    INR_r (e);                                  break;
 /*         case 0x1d:    DCR_r (e);                                  break; */
 /*         case 0x1e:      MVI (e, BYTE1);                           break; */
 /*         case 0x1f:      RAR ();                                   break; */
-/*         /1*   0x20: - *1/ */
+        case 0x20: JR_Cond(BYTE1, !cc.z); break;
         case 0x21:      LXI (h, l, BYTE2, BYTE1);                 break;
 /*         case 0x22:     SHLD (BYTE2, BYTE1);                       break; */
 /*         case 0x23:      INX (h, l);                               break; */
@@ -414,15 +414,15 @@ void LR35902::NonPrefixDisassemble(uint8_t opcode, uint8_t arg1, uint8_t arg2)
 	/* 	case 0x0a: printf("LDAX   B"); break; */
 	/* 	case 0x0b: printf("DCX    B"); break; */
 	/* 	case 0x0c: printf("INR    C"); break; */
-	/* 	case 0x0d: printf("DCR    C"); break; */
+		case 0x0d: printf("DCR    C"); break;
 		case 0x0e: printf("MVI    C,#$%02x", arg1); break;
 	/* 	case 0x0f: printf("RRC"); break; */
 
 	/* 	case 0x10: printf("NOP"); break; */
 		case 0x11: printf("LXI    D,#$%02x%02x", arg2, arg1); break;
-	/* 	case 0x12: printf("STAX   D"); break; */
+		case 0x12: printf("LD (DE) A"); break;
 	/* 	case 0x13: printf("INX    D"); break; */
-	/* 	case 0x14: printf("INR    D"); break; */
+		case 0x14: printf("INC    D"); break;
 	/* 	case 0x15: printf("DCR    D"); break; */
 	/* 	case 0x16: printf("MVI    D,#$%02x", code[1]); opbytes=2; break; */
 	/* 	case 0x17: printf("RAL"); break; */
@@ -430,12 +430,12 @@ void LR35902::NonPrefixDisassemble(uint8_t opcode, uint8_t arg1, uint8_t arg2)
 	/* 	case 0x19: printf("DAD    D"); break; */
 	/* 	case 0x1a: printf("LDAX   D"); break; */
 	/* 	case 0x1b: printf("DCX    D"); break; */
-	/* 	case 0x1c: printf("INR    E"); break; */
+		case 0x1c: printf("INC    E"); break;
 	/* 	case 0x1d: printf("DCR    E"); break; */
 	/* 	case 0x1e: printf("MVI    E,#$%02x", code[1]); opbytes = 2; break; */
 	/* 	case 0x1f: printf("RAR"); break; */
 
-	/* 	case 0x20: printf("NOP"); break; */
+		case 0x20: printf("JR NZ, %i", (int8_t)arg1); break;
 		case 0x21: printf("LXI    H,#$%02x%02x", arg2, arg1); break;
 	/* 	case 0x22: printf("SHLD   $%02x%02x", code[2], code[1]); opbytes=3; break; */
 	/* 	case 0x23: printf("INX    H"); break; */
