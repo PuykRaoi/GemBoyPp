@@ -4,7 +4,7 @@ CC := g++
 # Folders
 SRCDIR    := src
 BUILDDIR  := build
-TARGETDIR := bin
+TARGETDIR := .
 
 # Targets
 EXECUTABLE := gemboy

@@ -8,7 +8,7 @@
 int main()
 {
     SystemBus bus;
-    Cartridge cartridge;
+    Cartridge cartridge("roms/cpu_instrs.gb");
     LR35902 cpu;
     WRAM wram;
 
@@ -19,11 +19,13 @@ int main()
 
     std::cout << "Hello Gemboy!" << std::endl;
 
-    cartridge.LoadRom("test.gb");
+    //cartridge.LoadRom("test.gb");   
 
+    /*
     while(cpu.Running()) {
         cpu.PrintState();
         cpu.ExecuteInstruction();
         //getchar();
     }
+    */
 }
