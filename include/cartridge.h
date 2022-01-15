@@ -38,6 +38,7 @@ private:
 public:
     Cartridge(std::string file_name);
     uint8_t Read(uint16_t address);
+    void Write(uint16_t address, u8 data);
 
 // These seem to be internal functions...
 public:

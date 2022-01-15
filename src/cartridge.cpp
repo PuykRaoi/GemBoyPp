@@ -186,7 +186,13 @@ bool Cartridge::load(std::string file_name)
 
 uint8_t Cartridge::Read(uint16_t address)
 {
-    return 0;//RomData[address];
+    // Just ROM ONLY type supported
+    return rom_data[address];
+}
+
+void Cartridge::Write(uint16_t address, u8 data)
+{
+    NO_IMPL;
 }
 
 void Cartridge::print_info()

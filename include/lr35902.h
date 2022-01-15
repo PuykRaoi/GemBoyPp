@@ -7,168 +7,44 @@
 #define LR35902_H
 
 #include <cstdint>
+#include "Instructions.h"
 
 // Processor flags
-typedef struct ConditionCodes {
+struct Processor_flags {
+    uint8_t     z   : 1; // Zero flag
+    uint8_t     n   : 1; // Subtraction
+    uint8_t     h   : 1; // Half carry flag (BCD)
+    uint8_t     c   : 1; // Carry flag
     uint8_t     pad : 4;
-    uint8_t     c   : 1; // carry
-    uint8_t     h   : 1; // half carry
-    uint8_t     n   : 1; // negative
-    uint8_t     z   : 1; // zero
-} ConditionCodes;
+};
 
-// Forward declarations
-class SystemBus;
+// cpu registers
+struct Cpu_registers {
+    u8 a;   // Accumulator
+    u8 f;   // processor flags
+    u8 b;
+    u8 c;
+    u8 d;
+    u8 e;
+    u8 h;   // high
+    u8 l;   // low
+    u16 pc; // program counter
+    u16 sp; // stack pointer
 
 class LR35902 {
 public:
-    /* Public interface */
-	void Initialize();
-    void ExecuteInstruction();
-	void NonPrefixedInstruction(uint8_t opcode);
-	/* void EmulateCycles(uint32_t num_cycles); */
-    bool Running();
-    /* void Interrupt(uint8_t opcode); */
-    void Connect(SystemBus* bus);
-
-    /* Bus interface */
-    uint8_t Read(uint16_t address);
-    void Write(uint16_t address, uint8_t data);
-
-// Auxiliary functions for testing
-public:
-    void PrintState();
-    void Disassemble(uint8_t opcode, uint8_t arg1, uint8_t arg2);
-    void NonPrefixDisassemble(uint8_t opcode, uint8_t arg1, uint8_t arg2);
-
+    void Init();
+    bool step();
 private:
-    SystemBus* bus;
-
-// CPU state
-public:
-    // Accumulator register a
-    uint8_t     a;
-    // General purpose registers b,c,d,e
-    uint8_t     b;
-    uint8_t     c;
-    uint8_t     d;
-    uint8_t     e;
-    // Memory pair h, l registers
-    uint8_t     h;
-    uint8_t     l;
-    // Stack pointer
-    uint16_t    sp;
-    // Program counter
-    uint16_t    pc;
-    // Processor flags
-    struct ConditionCodes cc;
-    // interrupt enable
-    uint8_t     int_enable;
-
-    long int instructions_executed;
-    long int cycles;
-
-    // For debugging
-    bool halted = false;
-    void UnimplementedInstruction(uint8_t opcode);
-
-// Implementations for the opcodes
-    /* // Branch group */
-    void J_Cond(uint8_t hi, uint8_t lo, bool cond);
-    void JR_Cond(int8_t amount, bool cond);
-    /* void PCHL();                                    // */
-    /* // Other group */
-    void NOP();
-    /* // Stack group */
-    void LXI_SP(uint8_t hi, uint8_t lo);
-    /* void PUSH_rp(uint8_t& r1, uint8_t& r2);         // Tested */
-    /* void POP_rp(uint8_t& r1, uint8_t& r2);          // Tested */
-    /* void PUSH_PSW();                                // Tested */
-    /* void POP_PSW();                                 // Tested */
-    /* void XTHL();                                    // Skip */
-    /* void SPHL(); */
-    /* // Move group */
-    void MVI(uint8_t& reg, uint8_t data);
-    void MOV_r_r(uint8_t& r1, uint8_t& r2);
-    /* void MOV_r_m(uint8_t& r);                       // Tested */
-    /* void MOV_m_r(uint8_t& r);                       // Tested */
-    /* void MVI_M(uint8_t data);                       // Tested */
-    void LXI(uint8_t& r1, uint8_t& r2, uint8_t d1, uint8_t d2);
-    /* void LDAX(uint8_t& r1, uint8_t& r2);            // Tested */
-    /* void STA(uint8_t byte_h, uint8_t byte_l);       // Tested */
-    /* void LDA(uint8_t byte_h, uint8_t byte_l);       // Tested */
-    /* void XCHG();                                    // Tested */
-    /* void STAX_B();                                  // Tested */
-    void STAX_D();
-    /* void LHLD(uint8_t byte_h, uint8_t byte_l);      // Tested */
-    /* void SHLD(uint8_t byte_h, uint8_t byte_l);      // Tested */
-    void LDAHLI();
-    /* // Call group */
-    /* void CALL(uint8_t hi, uint8_t lo);              // Tested */
-    /* void CALL(uint16_t address); */
-    /* void C_Cond(uint8_t hi, uint8_t lo, bool cond); // Tested */
-    /* void RET();                                     // Tested */
-    /* void RST(uint8_t exp);                          // Pending */
-    /* void R_cond(bool cond);                         // Tested */
-    /* // Increment and decrement group */
-    void INR_r(uint8_t& r);
-    /* void INR_M();                                   // Tested */
-    void DCR_r(uint8_t& r);
-    /* void INX(uint8_t& r1, uint8_t& r2);             // Tested */
-    /* void INX_SP(); */
-    /* void DCX_H();                                   // Tested */
-    /* void DCX_B();                                   // Tested */
-    /* void DCX_D();                                   // Tested */
-    /* void DCX_SP();                                   // Tested */
-    /* void DCR_M();                                   // Tested */
-    /* // Add and Subtract groups */
-    /* void ADD_M();                                   // Tested */
-    /* void ADC_M();                                   // Tested */
-    /* void ADD_r(uint8_t& r);                         // Tested */
-    /* void ADC_r(uint8_t& r);                         // Tested */
-    /* void DAD(uint8_t& r1, uint8_t& r2);             // Tested */
-    /* void DAD_SP(); */
-    /* void ADI(uint8_t data);                         // Tested */
-    /* void ACI(uint8_t data);                         // Tested */
-    /* void SUI(uint8_t data);                         // Tested */
-    /* void SUB_r(uint8_t& r);                         // Tested */
-    /* void SBB_r(uint8_t& r);                         // Tested */
-    /* void SUB_M(); */
-    /* void SBB_M(); */
-    /* void SBI(uint8_t data);                         // Tested */
-    /* // Logical and rotate groups */
-    /* void ANA_r(uint8_t& r);                         // Tested */
-    /* void ANA_M();                                   // Tested */
-    /* void XRA_r(uint8_t& r);                         // Tested */
-    /* void XRA_M();                         // Tested */
-    /* void ORA_r(uint8_t& r);                         // Tested */
-    /* void ORA_M();                                   // Tested */
-    /* void CMP_r(uint8_t& r);                         // Tested */
-    /* void CMP_M();                                   // Skip */
-    /* void ORI(uint8_t data);                         // Tested */
-    /* void ANI(uint8_t data);                         // Tested */
-    /* void XRI(uint8_t data);                         // Tested */
-    /* void CPI(uint8_t data);                         // Tested */
-    /* void RRC();                                     // Tested */
-    /* void RLC();                                     // Tested */
-    /* void RAR();                                     // Tested */
-    /* void RAL();                                     // Tested */
-    /* // IO and special groups */
-    /* void OUT(uint8_t byte);                         // Pending */
-    /* void IN(uint8_t device);                        // Pending */
-    /* void EI(); */
-    /* void DI(); */
-    /* void STC();                                     // Tested */
-    /* void CMA();                                     // */
-    /* void CMC();                                     // */
-
-    // Internal
-    void logical_flags(uint8_t result);
-    void addition_flags(uint8_t a, uint8_t b, uint8_t cy);
-    void subtraction_flags(uint8_t a, uint8_t b, uint8_t cy);
-    uint8_t read_rp(uint8_t r1, uint8_t r2);
-    uint8_t ReadFromRegPair(uint8_t& hi, uint8_t& lo);
-    void ZSPFlags(uint8_t result);
+    Processor_flags flags;
+    Cpu_registers regs;
+    // current fetch...
+    u16 fetch_data;
+    u16 mem_dest;
+    u8 curr_opcode;
+    Instruction* current_instruction;
+    bool halted;
+    bool stepping;
 };
 
 
